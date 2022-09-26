@@ -62,6 +62,24 @@ services:
             - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
         command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --default-artifact-root s3://mlflow/ --host 0.0.0.0
 
+    jupyter:
+        restart: always
+        build: ./jupyter
+        image: jupyer_lab
+        container_name: jupyter_lab
+        ports:
+            - 8888:8888
+        volumes:
+            - "work:/home/work"
+        environment:
+            JUPYTER_ENABLE_LAB: "yes"
+            JUPYTER_TOKEN: "docker"
+            MLFLOW_TRACKING_URI: "http://web:5000"
+            MLFLOW_S3_ENDPOINT_URL: "http://minio:9000"
+            AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+            AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+
 volumes:
     dbdata:
     minio_data:
+    work:
